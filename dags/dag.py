@@ -24,5 +24,5 @@ my_task = PythonOperator(
     task_id="task_name",
     python_callable=print_exec_date,
     provide_context=True,
-    dag=dag
+    dag=dag,
 )

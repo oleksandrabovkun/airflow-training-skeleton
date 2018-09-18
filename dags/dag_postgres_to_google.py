@@ -22,8 +22,8 @@ pgsq_to_gcs = PostgresToGoogleCloudStorageOperator(
     task_id="postgres_to_gcs",
     postgres_conn_id="postgres_training",
     sql=(
-        "SELECT * FROM land_registry_price_paid_uk"
-        "WHERE transfer_date='{{ ds }}'"
+        "SELECT * FROM land_registry_price_paid_uk "
+        "WHERE transfer_date = '{{ ds }}'"
     ),
     bucket="airflow_training",
     filename="land_registry_price_paid_uk/{{ ds }}/properties_{}.json",

@@ -7,7 +7,11 @@ from airflow.hooks.http_hook import HttpHook
 from airflow.models import BaseOperator
 from airflow.utils.decorators import apply_defaults
 from airflow.contrib.hooks.gcs_hook import GoogleCloudStorageHook
-
+from airflow.contrib.operators.dataproc_operator import (
+    DataprocClusterCreateOperator,
+    DataProcPySparkOperator,
+    DataprocClusterDeleteOperator,
+)
 from godatadriven.operators.postgres_to_gcs import (
     PostgresToGoogleCloudStorageOperator
 )

@@ -7,11 +7,11 @@ from godatadriven.operators.postgres_to_gcs import (
 
 
 dag = DAG(
-    dag_id="dag_test",
+    dag_id="postgressToGcs",
     schedule_interval="30 7 * * *",
     default_args={
         "owner": "airflow",
-        "start_date": dt.datetime(2018, 9, 17),
+        "start_date": dt.datetime(2018, 9, 16),
         "depends_on_past": True,
         "email_on_failure": True,
         "email": "airflow_errors@myorganisation.com",

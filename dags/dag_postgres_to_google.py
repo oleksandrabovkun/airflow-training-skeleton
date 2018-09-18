@@ -1,7 +1,6 @@
 import datetime as dt
 
 from airflow import DAG
-from airflow.operators.python_operator import PythonOperator
 from godatadriven.operators.postgres_to_gcs import (
     PostgresToGoogleCloudStorageOperator
 )
@@ -22,7 +21,10 @@ dag = DAG(
 pgsq_to_gcs = PostgresToGoogleCloudStorageOperator(
     task_id="postgres_to_gcs",
     postgres_conn_id="postgres_training",
-    sql="SELECT * FROM land_registry_price_paid_uk WHERE transfer_date='{{ ds }}'",
+    sql=(
+        "SELECT * FROM land_registry_price_paid_uk"
+        "WHERE transfer_date='{{ ds }}'"
+    ),
     bucket="airflow_training",
     filename="land_registry_price_paid_uk/{{ ds }}/properties_{}.json",
     dag=dag,

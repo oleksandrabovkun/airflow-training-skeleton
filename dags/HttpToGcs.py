@@ -42,6 +42,7 @@ class HttpToGcsOperator(BaseOperator):
         self.endpoint = endpoint
         self.gcs_path = gcs_path
         self.gcs_conn_id = gcs_conn_id
+        self.bucket = bucket
 
     def execute(self, context):
         http = HttpHook(self.method, http_conn_id=self.http_conn_id)

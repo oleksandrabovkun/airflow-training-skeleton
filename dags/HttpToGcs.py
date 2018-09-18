@@ -8,6 +8,10 @@ from airflow.models import BaseOperator
 from airflow.utils.decorators import apply_defaults
 from airflow.contrib.hooks.gcs_hook import GoogleCloudStorageHook
 
+from godatadriven.operators.postgres_to_gcs import (
+    PostgresToGoogleCloudStorageOperator
+)
+
 
 class HttpToGcsOperator(BaseOperator):
     """
@@ -72,6 +76,19 @@ dag = DAG(
         "email": "airflow_errors@myorganisation.com",
     },
 )
+
+pgsq_to_gcs = PostgresToGoogleCloudStorageOperator(
+    task_id="postgres_to_gcs",
+    postgres_conn_id="postgres_training",
+    sql=(
+        "SELECT * FROM land_registry_price_paid_uk "
+        "WHERE transfer_date = '{{ ds }}'"
+    ),
+    bucket="airflow_training",
+    filename="land_registry_price_paid_uk/{{ ds }}/properties_{}.json",
+    dag=dag,
+)
+
 
 for currency in {"EUR", "USD"}:
     HttpToGcsOperator(

@@ -93,6 +93,15 @@ pgsq_to_gcs = PostgresToGoogleCloudStorageOperator(
     dag=dag,
 )
 
+dataproc_create_cluster = DataprocClusterCreateOperator(
+    task_id="create_dataproc",
+    cluster_name="analyse-pricing-{{ ds }}",
+    project_id="gdd-05b583b94256b6965bb8c8119a",
+    num_workers=2,
+    zone="europe-west4-a",
+    dag=dag,
+    auto_delete_ttl=5 * 60,  # Autodelete after 5 minutes
+)
 
 for currency in {"EUR", "USD"}:
     HttpToGcsOperator(
@@ -109,15 +118,6 @@ for currency in {"EUR", "USD"}:
         dag=dag,
     ) >> dataproc_create_cluster
 
-dataproc_create_cluster = DataprocClusterCreateOperator(
-    task_id="create_dataproc",
-    cluster_name="analyse-pricing-{{ ds }}",
-    project_id="gdd-05b583b94256b6965bb8c8119a",
-    num_workers=2,
-    zone="europe-west4-a",
-    dag=dag,
-    auto_delete_ttl=5 * 60,  # Autodelete after 5 minutes
-)
 
 compute_aggregates = DataProcPySparkOperator(
     task_id="compute_aggregates",

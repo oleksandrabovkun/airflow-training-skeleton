@@ -20,8 +20,10 @@ for currency in {"EUR", "USD"}:
     HttpToGcsOperator(
         task_id="get_currency_" + currency,
         method="GET",
-        endpoint="airflow-training-transform-valutas?date={{ ds }}&from=GBP&to="
-        + currency,
+        endpoint=(
+            "airflow-training-transform-valutas?date={{ ds }}&"
+            "from=GBP&to=" + currency
+        ),
         http_conn_id="airflow-training-currency-http",
         gcs_conn_id="airflow-training-storage-bucket",
         gcs_path="currency/{{ ds }}-" + currency + ".json",

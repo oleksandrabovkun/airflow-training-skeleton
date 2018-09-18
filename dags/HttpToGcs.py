@@ -2,8 +2,6 @@ import datetime as dt
 
 from airflow import DAG
 
-# import HttpToGcsOperator
-
 from tempfile import NamedTemporaryFile
 from airflow.hooks.http_hook import HttpHook
 from airflow.models import BaseOperator
@@ -34,6 +32,7 @@ class HttpToGcsOperator(BaseOperator):
         method="GET",
         http_conn_id="http_default",
         gcs_conn_id="gcs_default",
+        bucket="airflow_training",
         *args,
         **kwargs
     ):
@@ -55,7 +54,7 @@ class HttpToGcsOperator(BaseOperator):
                 google_cloud_storage_conn_id=self.gcs_conn_id
             )
             hook.upload(
-                bucket="airflow_training",
+                bucket=self.bucket,
                 object=self.gcs_path,
                 filename=tmp_file_handle.name,
             )
@@ -81,6 +80,7 @@ for currency in {"EUR", "USD"}:
             "airflow-training-transform-valutas?date={{ ds }}&"
             "from=GBP&to=" + currency
         ),
+        bucket="airflow_training",
         http_conn_id="airflow-training-currency-http",
         gcs_conn_id="airflow-training-storage-bucket",
         gcs_path="currency/{{ ds }}-" + currency + ".json",

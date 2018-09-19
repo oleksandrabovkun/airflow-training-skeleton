@@ -6,6 +6,7 @@ from tempfile import NamedTemporaryFile
 from airflow.hooks.http_hook import HttpHook
 from airflow.models import BaseOperator
 from airflow.utils.decorators import apply_defaults
+from airflow.utils.trigger_rule import TriggerRule
 from airflow.contrib.hooks.gcs_hook import GoogleCloudStorageHook
 from airflow.contrib.operators.dataproc_operator import (
     DataprocClusterCreateOperator,
@@ -126,7 +127,6 @@ compute_aggregates = DataProcPySparkOperator(
     dag=dag,
 )
 
-from airflow.utils.trigger_rule import TriggerRule
 
 dataproc_delete_cluster = DataprocClusterDeleteOperator(
     task_id="delete_dataproc",

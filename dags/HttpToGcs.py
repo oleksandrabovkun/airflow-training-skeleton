@@ -100,7 +100,6 @@ dataproc_create_cluster = DataprocClusterCreateOperator(
     num_workers=2,
     zone="europe-west4-a",
     dag=dag,
-    auto_delete_ttl=5 * 60,  # Autodelete after 5 minutes
 )
 
 for currency in {"EUR", "USD"}:
@@ -121,17 +120,20 @@ for currency in {"EUR", "USD"}:
 
 compute_aggregates = DataProcPySparkOperator(
     task_id="compute_aggregates",
-    main="gs://airflow-training-data/build_statistics.py",
+    main="gs://airflow-training/build_statistics.py",
     cluster_name="analyse-pricing-{{ ds }}",
     arguments=["{{ ds }}"],
     dag=dag,
 )
+
+from airflow.utils.trigger_rule import TriggerRule
 
 dataproc_delete_cluster = DataprocClusterDeleteOperator(
     task_id="delete_dataproc",
     cluster_name="analyse-pricing-{{ ds }}",
     dag=dag,
     project_id="gdd-05b583b94256b6965bb8c8119a",
+    trigger_rule=TriggerRule.ALL_DONE,
 )
 
 pgsq_to_gcs >> dataproc_create_cluster

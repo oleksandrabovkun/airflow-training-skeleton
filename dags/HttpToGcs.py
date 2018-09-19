@@ -119,7 +119,7 @@ for currency in {"EUR", "USD"}:
         gcs_conn_id="airflow-training-storage-bucket",
         gcs_path="currency/{{ ds }}-" + currency + ".json",
         dag=dag,
-    ) >> dataproc_create_cluster  # , dataflow_job
+    ) >> dataproc_create_cluster, dataflow_job
 
 
 compute_aggregates = DataProcPySparkOperator(
@@ -139,27 +139,27 @@ dataproc_delete_cluster = DataprocClusterDeleteOperator(
     trigger_rule=TriggerRule.ALL_DONE,
 )
 
-# dataflow_job = DataFlowPythonOperator(
-#     task_id="land_registry_prices_to_bigquery",
-#     dataflow_default_options={
-#         "project": "gdd-05b583b94256b6965bb8c8119a",
-#         "region": "europe-west1",
-#     },
-#     py_file="gs://airflow_training/other/dataflow_job.py",
-#     dag=dag,
-# )
+dataflow_job = DataFlowPythonOperator(
+    task_id="land_registry_prices_to_bigquery",
+    dataflow_default_options={
+        "project": "gdd-05b583b94256b6965bb8c8119a",
+        "region": "europe-west1",
+    },
+    py_file="gs://airflow_training/other/dataflow_job.py",
+    dag=dag,
+)
 
 gcs_to_bigquery = GoogleCloudStorageToBigQueryOperator(
     task_id="write_to_bq",
     bucket="airflow_training",
     source_objects=["average_prices/transfer_date={{ ds }}/*"],
-    destination_project_dataset_table="airflow_training:prices.land_registry_price${{ ds_nodash }}",
+    destination_project_dataset_table="gdd-05b583b94256b6965bb8c8119a:prices.land_registry_price${{ ds_nodash }}",
     source_format="PARQUET",
     write_disposition="WRITE_TRUNCATE",
     dag=dag,
 )
 
 
-pgsq_to_gcs >> dataproc_create_cluster  # , dataflow_job
+pgsq_to_gcs >> dataproc_create_cluster, dataflow_job
 dataproc_create_cluster >> compute_aggregates >> dataproc_delete_cluster
 compute_aggregates >> gcs_to_bigquery

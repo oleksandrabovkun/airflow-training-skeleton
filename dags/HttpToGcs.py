@@ -121,8 +121,7 @@ for currency in {"EUR", "USD"}:
 
 compute_aggregates = DataProcPySparkOperator(
     task_id="compute_aggregates",
-    main="gs://airflow-training/build_statistics.py",
-    gcp_conn_id="airflow-training-storage-bucket",
+    main="gs://airflow_training/build_statistics.py",
     cluster_name="analyse-pricing-{{ ds }}",
     arguments=["{{ ds }}"],
     dag=dag,

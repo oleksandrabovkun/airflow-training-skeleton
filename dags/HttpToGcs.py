@@ -165,6 +165,7 @@ gcs_to_bigquery = GoogleCloudStorageToBigQueryOperator(
 )
 
 
-pgsq_to_gcs >> dataproc_create_cluster, dataflow_job
+pgsq_to_gcs >> dataproc_create_cluster
+pgsq_to_gcs >> dataflow_job
 dataproc_create_cluster >> compute_aggregates >> dataproc_delete_cluster
 compute_aggregates >> gcs_to_bigquery

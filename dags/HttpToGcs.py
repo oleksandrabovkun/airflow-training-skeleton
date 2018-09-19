@@ -118,7 +118,7 @@ dataflow_job = DataFlowPythonOperator(
 )
 
 for currency in {"EUR", "USD"}:
-    HttpToGcsOperator(
+    http_to_gcs = HttpToGcsOperator(
         task_id="get_currency_" + currency,
         method="GET",
         endpoint=(
@@ -130,7 +130,9 @@ for currency in {"EUR", "USD"}:
         gcs_conn_id="airflow-training-storage-bucket",
         gcs_path="currency/{{ ds }}-" + currency + ".json",
         dag=dag,
-    ) >> dataproc_create_cluster, dataflow_job
+    )
+    http_to_gcs >> dataproc_create_cluster
+    http_to_gcs >> dataflow_job
 
 
 compute_aggregates = DataProcPySparkOperator(
